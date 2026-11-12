@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1050" viewBox="0 0 1900 1050" font-family="DejaVu Sans, Arial, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#232F3E"/></marker>
+    <marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#D9480F"/></marker>
+    <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1C7ED6"/></marker>
+    <marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A94A3"/></marker>
+    <style>
+      .t  { font-size: 17px; font-weight: bold; fill: #232F3E; }
+      .s  { font-size: 13px; fill: #4A5563; }
+      .xs { font-size: 12px; fill: #5F6B7A; }
+      .mono { font-family: DejaVu Sans Mono, monospace; font-size: 12px; fill: #4A5563; }
+      .box{ fill: #FFFFFF; stroke: #232F3E; stroke-width: 1.6; }
+      .num{ fill: #D9480F; }
+      .numb{ fill: #1C7ED6; }
+      .numt{ font-size: 14px; font-weight: bold; fill: #FFFFFF; }
+      .lbl{ font-size: 12px; fill: #232F3E; font-weight: bold; }
+    </style>
+  </defs>
+  <rect width="1900" height="1050" fill="#FFFFFF"/>
+
+  <text x="40" y="52" font-size="28" font-weight="bold" fill="#232F3E">Cloud File Hosting with S3 + SNS — Architecture</text>
+  <text x="40" y="80" class="s">Files go straight from the browser to a private S3 bucket using short-lived presigned URLs. Every upload triggers an SNS email alert within seconds.</text>
+
+  <!-- Browser -->
+  <rect x="50" y="200" width="220" height="140" rx="10" class="box" style="fill:#F6F8FA"/>
+  <text x="160" y="235" text-anchor="middle" class="t">Browser</text>
+  <text x="160" y="259" text-anchor="middle" class="s">index.html</text>
+  <text x="160" y="280" text-anchor="middle" class="xs">drag &amp; drop upload</text>
+  <text x="160" y="298" text-anchor="middle" class="xs">progress bar · file list</text>
+  <text x="160" y="316" text-anchor="middle" class="xs">download buttons</text>
+
+  <!-- AWS cloud -->
+  <rect x="330" y="110" width="1310" height="830" rx="14" fill="#FFFBF7" stroke="#D9480F" stroke-width="2" stroke-dasharray="9 6"/>
+  <rect x="330" y="110" width="430" height="32" rx="6" fill="#D9480F"/>
+  <text x="346" y="132" font-size="15" font-weight="bold" fill="#FFFFFF">AWS Cloud · Asia Pacific (Mumbai) ap-south-1</text>
+
+  <!-- Lambda -->
+  <rect x="560" y="170" width="340" height="190" rx="10" class="box" style="fill:#FFF4E6;stroke:#E8590C"/>
+  <text x="580" y="202" class="t" style="fill:#C2410C">AWS Lambda + Function URL</text>
+  <text x="580" y="226" class="s">file-hosting-api · Node.js 22</text>
+  <text x="580" y="250" class="xs">Signs presigned URLs (expire in 5 min)</text>
+  <text x="580" y="270" class="xs">Never handles file bytes</text>
+  <text x="580" y="298" class="mono">GET  ?action=list</text>
+  <text x="580" y="316" class="mono">POST ?action=upload-url</text>
+  <text x="580" y="334" class="mono">GET  ?action=download-url</text>
+
+  <!-- CloudWatch -->
+  <rect x="1040" y="200" width="330" height="110" rx="10" class="box" style="fill:#FFF8E6;stroke:#B7791F"/>
+  <text x="1060" y="232" class="t" style="fill:#8A5A00">Amazon CloudWatch Logs</text>
+  <text x="1060" y="258" class="s">Lambda logs and errors</text>
+  <text x="1060" y="280" class="xs">first stop when debugging</text>
+  <line x1="900" y1="255" x2="1036" y2="255" stroke="#8A94A3" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arg)"/>
+
+  <!-- S3 -->
+  <rect x="560" y="460" width="340" height="240" rx="10" class="box" style="fill:#F1F8F2;stroke:#2B8A3E"/>
+  <text x="580" y="492" class="t" style="fill:#1E6B30">Amazon S3 · private bucket</text>
+  <text x="580" y="516" class="s">ayush-file-hosting-2026 / uploads/</text>
+  <rect x="580" y="530" width="300" height="24" rx="5" fill="#E6F4EA"/>
+  <text x="590" y="547" class="xs">Block Public Access ON · SSE-S3 encryption</text>
+  <rect x="580" y="560" width="300" height="24" rx="5" fill="#E6F4EA"/>
+  <text x="590" y="577" class="xs">Versioning ON · CORS for PUT / GET</text>
+  <rect x="580" y="590" width="300" height="24" rx="5" fill="#E6F4EA"/>
+  <text x="590" y="607" class="xs">11 nines durability · strong consistency</text>
+  <text x="580" y="640" class="lbl">Event notification: notify-on-upload</text>
+  <text x="580" y="660" class="xs">s3:ObjectCreated:* → SNS topic</text>
+  <text x="580" y="680" class="xs">(sends s3:TestEvent when first saved)</text>
+
+  <!-- Lambda -> S3 dashed -->
+  <line x1="730" y1="360" x2="730" y2="456" stroke="#8A94A3" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arg)"/>
+  <text x="742" y="404" class="xs">ListObjectsV2 · signs URLs</text>
+  <text x="742" y="420" class="xs">with its IAM role</text>
+
+  <!-- SNS -->
+  <rect x="1040" y="460" width="330" height="240" rx="10" class="box" style="fill:#FFF0F6;stroke:#C2255C"/>
+  <text x="1060" y="492" class="t" style="fill:#A61E4D">Amazon SNS · Standard topic</text>
+  <text x="1060" y="516" class="s">file-upload-notifications</text>
+  <text x="1060" y="546" class="lbl">Topic resource policy</text>
+  <text x="1060" y="566" class="xs">allows s3.amazonaws.com → SNS:Publish</text>
+  <text x="1060" y="584" class="xs">only if SourceArn = this bucket</text>
+  <text x="1060" y="602" class="xs">and SourceAccount = my account</text>
+  <text x="1060" y="632" class="lbl">Subscription</text>
+  <text x="1060" y="652" class="xs">Protocol: Email · status Confirmed</text>
+  <text x="1060" y="672" class="xs">(Standard, not FIFO: FIFO can't email)</text>
+
+  <!-- S3 -> SNS -->
+  <line x1="900" y1="580" x2="1036" y2="580" stroke="#D9480F" stroke-width="2.4" marker-end="url(#aro)"/>
+  <circle cx="968" cy="555" r="13" class="num"/><text x="968" y="560" text-anchor="middle" class="numt">4</text>
+
+  <!-- Email -->
+  <rect x="1700" y="510" width="170" height="140" rx="10" class="box"/>
+  <text x="1785" y="545" text-anchor="middle" class="t">📧 Email</text>
+  <text x="1785" y="570" text-anchor="middle" class="xs">ObjectCreated:Put</text>
+  <text x="1785" y="588" text-anchor="middle" class="xs">bucket · key · size</text>
+  <text x="1785" y="606" text-anchor="middle" class="xs">versionId · who</text>
+  <text x="1785" y="624" text-anchor="middle" class="xs">within seconds</text>
+  <line x1="1370" y1="580" x2="1696" y2="580" stroke="#D9480F" stroke-width="2.4" marker-end="url(#aro)"/>
+  <circle cx="1530" cy="555" r="13" class="num"/><text x="1530" y="560" text-anchor="middle" class="numt">5</text>
+
+  <!-- Browser <-> Lambda -->
+  <line x1="270" y1="235" x2="556" y2="235" stroke="#D9480F" stroke-width="2.4" marker-end="url(#aro)"/>
+  <circle cx="370" cy="214" r="13" class="num"/><text x="370" y="219" text-anchor="middle" class="numt">1</text>
+  <text x="390" y="219" class="xs">request upload link</text>
+  <line x1="556" y1="300" x2="274" y2="300" stroke="#D9480F" stroke-width="2.4" marker-end="url(#aro)"/>
+  <circle cx="370" cy="279" r="13" class="num"/><text x="370" y="284" text-anchor="middle" class="numt">2</text>
+  <text x="390" y="284" class="xs">presigned PUT URL</text>
+
+  <!-- Browser -> S3 upload -->
+  <path d="M210,340 L210,560 L556,560" fill="none" stroke="#D9480F" stroke-width="2.4" marker-end="url(#aro)"/>
+  <circle cx="350" cy="537" r="13" class="num"/><text x="350" y="542" text-anchor="middle" class="numt">3</text>
+  <text x="370" y="542" class="xs">PUT file directly</text>
+
+  <!-- S3 -> Browser download -->
+  <path d="M556,640 L120,640 L120,344" fill="none" stroke="#1C7ED6" stroke-width="2.2" marker-end="url(#arb)"/>
+  <circle cx="350" cy="617" r="13" class="numb"/><text x="350" y="622" text-anchor="middle" class="numt">6</text>
+  <text x="370" y="622" class="xs">download (presigned GET)</text>
+
+  <!-- IAM -->
+  <rect x="360" y="760" width="620" height="160" rx="10" class="box" style="fill:#F7F2FC;stroke:#7048E8"/>
+  <text x="380" y="790" class="t" style="fill:#5F3DC4">AWS IAM · least privilege</text>
+  <text x="380" y="816" class="s">Lambda execution role (file-hosting-api-role):</text>
+  <text x="392" y="838" class="xs">• s3:ListBucket only for the uploads/ prefix</text>
+  <text x="392" y="856" class="xs">• s3:PutObject + s3:GetObject only on uploads/*  (no delete)</text>
+  <text x="392" y="874" class="xs">• basic execution role → write CloudWatch logs</text>
+  <text x="380" y="900" class="xs">Presigned URLs carry this role’s permissions → uploads are traceable in the event.</text>
+
+  <!-- Security / cost -->
+  <rect x="1010" y="760" width="600" height="160" rx="10" class="box" style="fill:#FAFBFC;stroke:#8A94A3"/>
+  <text x="1030" y="790" class="t">Security &amp; cost controls</text>
+  <text x="1042" y="816" class="xs">• bucket never public · HTTPS-only presigned links (5-min expiry)</text>
+  <text x="1042" y="836" class="xs">• links tied to one key, one method, one content type</text>
+  <text x="1042" y="856" class="xs">• filenames sanitised · path traversal rejected</text>
+  <text x="1042" y="876" class="xs">• serverless: no idle cost · AWS Budgets zero-spend alert</text>
+  <text x="1042" y="896" class="xs">• next: auth (Cognito), size limits, lifecycle for old versions</text>
+
+  <!-- Legend -->
+  <rect x="30" y="690" width="290" height="330" rx="10" fill="#FAFBFC" stroke="#D5DAE1"/>
+  <text x="46" y="720" font-size="16" font-weight="bold" fill="#232F3E">Flow</text>
+  <g class="s">
+    <circle cx="56" cy="748" r="11" class="num"/><text x="56" y="753" text-anchor="middle" class="numt" style="font-size:12px">1</text>
+    <text x="74" y="753">Page asks Lambda for a link</text>
+    <circle cx="56" cy="784" r="11" class="num"/><text x="56" y="789" text-anchor="middle" class="numt" style="font-size:12px">2</text>
+    <text x="74" y="789">Lambda signs a 5-min URL</text>
+    <circle cx="56" cy="820" r="11" class="num"/><text x="56" y="825" text-anchor="middle" class="numt" style="font-size:12px">3</text>
+    <text x="74" y="825">Browser PUTs file to S3</text>
+    <circle cx="56" cy="856" r="11" class="num"/><text x="56" y="861" text-anchor="middle" class="numt" style="font-size:12px">4</text>
+    <text x="74" y="861">S3 emits ObjectCreated</text>
+    <circle cx="56" cy="892" r="11" class="num"/><text x="56" y="897" text-anchor="middle" class="numt" style="font-size:12px">5</text>
+    <text x="74" y="897">SNS emails subscribers</text>
+    <circle cx="56" cy="928" r="11" class="numb"/><text x="56" y="933" text-anchor="middle" class="numt" style="font-size:12px">6</text>
+    <text x="74" y="933">Download via presigned GET</text>
+  </g>
+  <line x1="46" y1="955" x2="304" y2="955" stroke="#D5DAE1"/>
+  <line x1="46" y1="980" x2="82" y2="980" stroke="#D9480F" stroke-width="2.4" marker-end="url(#aro)"/>
+  <text x="90" y="985" class="xs">upload</text>
+  <line x1="150" y1="980" x2="186" y2="980" stroke="#1C7ED6" stroke-width="2.2" marker-end="url(#arb)"/>
+  <text x="194" y="985" class="xs">download</text>
+  <line x1="46" y1="1005" x2="82" y2="1005" stroke="#8A94A3" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arg)"/>
+  <text x="90" y="1010" class="xs">control / logs</text>
+</svg>
